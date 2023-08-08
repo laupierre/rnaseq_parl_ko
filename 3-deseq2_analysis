@@ -23,9 +23,8 @@ dim (mylength)
 
 annot <- read.delim ("gencode.vM32.annotation.txt")
 head (annot)
-
-
-
+length (unique (annot$gene_id))
+# 56953
 
 
 
@@ -39,6 +38,7 @@ head (annot)
 counts <- counts[ ,grep ("bam", colnames (counts))]
 colnames (counts) <- gsub ("Aligned.out.bam", "", colnames (counts))
 dim (counts)
+# 57010
 
 
 # brain tissues
