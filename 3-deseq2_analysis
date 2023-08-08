@@ -101,6 +101,7 @@ res <- merge (data.frame (res), round (counts(dds, norm=TRUE)), by="row.names")
 res <- merge (res, annot, by.x="Row.names", by.y="row.names") 
 
 res <- res[order (res$padj), ]
+colnames (res)[1] <- "gene_id"
 
 table (res$padj < 0.05)
 
@@ -178,6 +179,7 @@ res <- merge (data.frame (res), round (counts(dds, norm=TRUE)), by="row.names")
 res <- merge (res, annot, by.x="Row.names", by.y="row.names") 
 
 res <- res[order (res$padj), ]
+colnames (res)[1] <- "gene_id"
 
 table (res$padj < 0.05)
 
