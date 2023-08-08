@@ -45,9 +45,6 @@ dim (annot)
 
 counts <- read.delim ("parl_subread.counts.txt", row.names=1, skip=1)
 
-annot <- counts[ ,c("gene_name", "gene_type")]
-head (annot)
-
 counts <- counts[ ,grep ("bam", colnames (counts))]
 colnames (counts) <- gsub ("Aligned.out.bam", "", colnames (counts))
 dim (counts)
