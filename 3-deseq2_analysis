@@ -35,8 +35,11 @@ length (unique (annot$gene_id))
 # write.table (annot, "parl_temp_annot.txt", sep="\t", quote=F, row.names=F)
 
 annot <- merge (annot, mylength, by.x="gene_id")
+annot <- annot[ ,c(1:5,7,8,6)]
 dim (annot)
-# 
+# 56953
+
+
 
 ## star/featurecounts results
 
