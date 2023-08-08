@@ -1,0 +1,117 @@
+library (rtracklayer)
+
+gtf <- rtracklayer::import("gencode.vM32.primary_assembly.annotation.gtf")
+gtf_df <- as.data.frame(gtf)
+head (gtf_df)
+
+transcripts <- unique (gtf_df$transcript_id)
+transcripts <- transcripts[grep ("ENSMUST", transcripts)]
+length (transcripts)
+
+#res <- list ()
+
+#for (i in (1:length (transcripts))) {
+#parl <- gtf_df[grep (transcripts[i], gtf_df$transcript_id), ]
+#parl <- parl[parl$type == "exon", ]
+#res[[i]] <- data.frame (transcript_id= transcripts[i], Length= sum (parl$width))
+#}
+
+#res2 <- do.call ("rbind", res)
+
+
+
+
+## Parallel processing
+
+gtf <- rtracklayer::import("gencode.vM32.primary_assembly.annotation.gtf")
+gtf_df <- as.data.frame(gtf)
+
+transcripts <- unique (gtf_df$transcript_id)
+transcripts <- transcripts[grep ("ENSMUST", transcripts)]
+length (transcripts)
+
+
+
+library(foreach)
+library (doFuture)
+library(progressr)
+
+registerDoFuture()
+plan(cluster, workers = 4)
+
+handlers(global = TRUE)
+
+
+## separate by chunk of 1000 elements
+seqlast <- function (from, to, by) 
+{
+  vec <- do.call(what = seq, args = list(from, to, by))
+  if ( tail(vec, 1) != to ) {
+    return(c(vec, to))
+  } else {
+    return(vec)
+  }
+}
+
+
+myseq <- seqlast (from=1, to=length (transcripts), by=1000)
+
+
+## parallel processing function
+my_fun <- function (x) {
+
+p <- progressor (along = x)
+  
+foreach(i = x) %dopar% { 
+p(sprintf("x=%g", x))
+parl <- gtf_df[grep (transcripts[i], gtf_df$transcript_id), ]
+parl <- parl[parl$type == "exon", ]
+data.frame (transcript_id= transcripts[i], Length= sum (parl$width))
+}
+}
+
+
+
+## write directly results of each chunk to a file
+
+for (j in (1:length (myseq))) {
+if (j == length (myseq)) {
+return (NULL)
+} else {
+results <- do.call ("rbind", my_fun( (myseq[j]):(myseq[j+1] -1) ) )
+}
+
+if (j == 1) {
+write.table (results, "transcript_length.csv", row.names = FALSE)
+} else {
+write.table (results, file= "transcript_length.csv", append=TRUE, col.names = FALSE, row.names=F)
+}
+
+}
+
+
+
+## summarize length by Gene
+
+gtf <- rtracklayer::import("gencode.vM32.primary_assembly.annotation.gtf")
+gtf_df <- as.data.frame(gtf)
+gtf_df <- gtf_df[gtf_df$type == "transcript", ]
+gtf_df <- unique (gtf_df[ ,c("gene_id", "transcript_id")])
+
+
+# this was pre-calculated using the code above
+mylength <- read.delim ("transcript_length.csv", sep="")
+gtf_df <- merge (gtf_df, mylength, by="transcript_id")
+head (gtf_df)
+
+
+library (dplyr)
+
+mylength <- gtf_df %>% group_by (gene_id) %>% summarize (minLength = min(Length), maxLength = max(Length))
+head (mylength)
+
+
+
+
+
+
