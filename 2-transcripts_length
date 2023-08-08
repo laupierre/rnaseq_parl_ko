@@ -1,12 +1,12 @@
-library (rtracklayer)
+## serial processing
 
-gtf <- rtracklayer::import("gencode.vM32.primary_assembly.annotation.gtf")
-gtf_df <- as.data.frame(gtf)
-head (gtf_df)
+#gtf <- rtracklayer::import("gencode.vM32.primary_assembly.annotation.gtf")
+#gtf_df <- as.data.frame(gtf)
+#head (gtf_df)
 
-transcripts <- unique (gtf_df$transcript_id)
-transcripts <- transcripts[grep ("ENSMUST", transcripts)]
-length (transcripts)
+#transcripts <- unique (gtf_df$transcript_id)
+#transcripts <- transcripts[grep ("ENSMUST", transcripts)]
+#length (transcripts)
 
 #res <- list ()
 
@@ -20,7 +20,6 @@ length (transcripts)
 
 
 
-
 ## Parallel processing
 
 gtf <- rtracklayer::import("gencode.vM32.primary_assembly.annotation.gtf")
@@ -29,7 +28,6 @@ gtf_df <- as.data.frame(gtf)
 transcripts <- unique (gtf_df$transcript_id)
 transcripts <- transcripts[grep ("ENSMUST", transcripts)]
 length (transcripts)
-
 
 
 library(foreach)
@@ -42,7 +40,7 @@ plan(cluster, workers = 4)
 handlers(global = TRUE)
 
 
-## separate by chunk of 1000 elements
+## separate by chunks of 1000 elements
 seqlast <- function (from, to, by) 
 {
   vec <- do.call(what = seq, args = list(from, to, by))
@@ -53,8 +51,8 @@ seqlast <- function (from, to, by)
   }
 }
 
-
 myseq <- seqlast (from=1, to=length (transcripts), by=1000)
+
 
 
 ## parallel processing function
@@ -72,7 +70,7 @@ data.frame (transcript_id= transcripts[i], Length= sum (parl$width))
 
 
 
-## write directly results of each chunk to a file
+## write directly the results of each chunk to a file (to be memory efficient!)
 
 for (j in (1:length (myseq))) {
 if (j == length (myseq)) {
@@ -91,7 +89,7 @@ write.table (results, file= "transcript_length.csv", append=TRUE, col.names = FA
 
 
 
-## summarize length by Gene
+## summarize length of transcripts by Gene
 
 gtf <- rtracklayer::import("gencode.vM32.primary_assembly.annotation.gtf")
 gtf_df <- as.data.frame(gtf)
@@ -99,7 +97,7 @@ gtf_df <- gtf_df[gtf_df$type == "transcript", ]
 gtf_df <- unique (gtf_df[ ,c("gene_id", "transcript_id")])
 
 
-# this was pre-calculated using the code above
+# the length was pre-calculated using the code above
 mylength <- read.delim ("transcript_length.csv", sep="")
 gtf_df <- merge (gtf_df, mylength, by="transcript_id")
 head (gtf_df)
