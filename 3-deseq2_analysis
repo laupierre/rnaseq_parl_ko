@@ -30,11 +30,13 @@ annot <- annot[!duplicated (annot), ]
 length (unique (annot$gene_id))
 # 56953
 
-annot <- merge (annot, mylength, by.x="gene_id", by.y="gene_id", all.x=TRUE, all.y=TRUE)
+# ~60 genes are placed on scaffold 
+# annot <- merge (annot, mylength, by.x="gene_id", by.y="gene_id", all.x=TRUE, all.y=TRUE)
+# write.table (annot, "parl_temp_annot.txt", sep="\t", quote=F, row.names=F)
 
-write.table (annot, "parl_temp_annot.txt", sep="\t", quote=F, row.names=F)
-
-
+annot <- merge (annot, mylength, by.x="gene_id")
+dim (annot)
+# 
 
 ## star/featurecounts results
 
