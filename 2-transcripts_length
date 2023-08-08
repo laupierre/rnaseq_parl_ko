@@ -110,6 +110,12 @@ library (dplyr)
 mylength <- gtf_df %>% group_by (gene_id) %>% summarize (minLength = min(Length), maxLength = max(Length))
 head (mylength)
 
+dim (mylength)
+# 57010     3
+
+
+
+
 
 
 
