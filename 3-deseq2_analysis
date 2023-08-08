@@ -1,4 +1,4 @@
-## summarize length of transcripts by Gene
+## summarize length (min and max lengths) of transcripts by Gene
 
 gtf <- rtracklayer::import("gencode.vM32.primary_assembly.annotation.gtf")
 gtf_df <- as.data.frame(gtf)
