@@ -37,7 +37,7 @@ length (unique (annot$gene_id))
 annot <- merge (annot, mylength, by.x="gene_id")
 annot <- annot[ ,c(1:5,7,8,6)]
 dim (annot)
-# 56953
+# 56953  8
 
 
 
@@ -53,6 +53,7 @@ dim (counts)
 
 subread <- merge (counts, annot, by.x="row.names", by.y="gene_id")
 write.table (subread, "parl_star_raw_data_annot_v3.txt", sep="\t", quote=F, row.names=F)
+
 
 # brain tissue
 
