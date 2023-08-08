@@ -28,6 +28,7 @@ gtf_df <- as.data.frame(gtf)
 transcripts <- unique (gtf_df$transcript_id)
 transcripts <- transcripts[grep ("ENSMUST", transcripts)]
 length (transcripts)
+# 149443
 
 
 library(foreach)
@@ -74,7 +75,8 @@ data.frame (transcript_id= transcripts[i], Length= sum (parl$width))
 
 for (j in (1:length (myseq))) {
 if (j == length (myseq)) {
-return (NULL)
+#return (NULL)
+results <- do.call ("rbind", my_fun( (myseq[j])))
 } else {
 results <- do.call ("rbind", my_fun( (myseq[j]):(myseq[j+1] -1) ) )
 }
