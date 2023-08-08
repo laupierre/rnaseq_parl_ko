@@ -17,8 +17,12 @@ dim (mylength)
 # 57010     3
 
 
+
 ## Gene annotation
 # See https://github.com/laupierre/RNA-Seq_mouse_pipeline/blob/main/gene_annotation.R
+
+annot <- read.delim ("gencode.vM32.annotation.txt")
+head (annot)
 
 
 
