@@ -22,10 +22,19 @@ dim (mylength)
 # See https://github.com/laupierre/RNA-Seq_mouse_pipeline/blob/main/gene_annotation.R
 
 annot <- read.delim ("gencode.vM32.annotation.txt")
-head (annot)
 length (unique (annot$gene_id))
 # 56953
 
+annot <- annot[ ,grep ("transcript_id", colnames (annot), invert=TRUE)]
+annot <- annot[!duplicated (annot), ]
+length (unique (annot$gene_id))
+# 56953
+
+annot <- merge (annot, mylength, by.x="gene_id", by.y="gene_id", all.x=TRUE, all.y=TRUE)
+
+library(xlsx)
+
+write.xlsx (annot, "parl_temp_annot.xlsx", rowNames=F)
 
 
 ## star/featurecounts results
@@ -41,6 +50,6 @@ dim (counts)
 # 57010
 
 
-# brain tissues
+# brain tissue
 
 
