@@ -1,6 +1,31 @@
+## summarize length of transcripts by Gene
+
+gtf <- rtracklayer::import("gencode.vM32.primary_assembly.annotation.gtf")
+gtf_df <- as.data.frame(gtf)
+gtf_df <- gtf_df[gtf_df$type == "transcript", ]
+gtf_df <- unique (gtf_df[ ,c("gene_id", "transcript_id")])
+
+# the length was pre-calculated using the 2-transcripts_length code
+mylength <- read.delim ("transcript_length.csv", sep="")
+gtf_df <- merge (gtf_df, mylength, by="transcript_id")
+
+
+library (dplyr)
+
+mylength <- gtf_df %>% group_by (gene_id) %>% summarize (minLength = min(Length), maxLength = max(Length))
+dim (mylength)
+# 57010     3
+
+
 ## Gene annotation
 # See https://github.com/laupierre/RNA-Seq_mouse_pipeline/blob/main/gene_annotation.R
 
+
+
+
+
+
+## star/featurecounts results
 
 counts <- read.delim ("parl_subread.counts.txt", row.names=1, skip=1)
 
