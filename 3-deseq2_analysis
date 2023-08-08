@@ -60,6 +60,7 @@ write.table (subread, "parl_star_raw_data_annot_v3.txt", sep="\t", quote=F, row.
 ###### Differential expression
 
 counts <- read.delim ("parl_star_raw_data_annot_v3.txt", row.names=1)
+counts <- counts[grep ("miRNA|rRNA", counts$gene_type, invert=TRUE), ]
 
 annot <- counts[ ,grep ("Parl", colnames (counts), invert=TRUE)]
 counts <- counts[ ,grep ("Parl", colnames (counts))]
