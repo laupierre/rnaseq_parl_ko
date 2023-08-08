@@ -34,7 +34,8 @@ annot <- merge (annot, mylength, by.x="gene_id", by.y="gene_id", all.x=TRUE, all
 
 library(xlsx)
 
-write.xlsx (annot, "parl_temp_annot.xlsx", rowNames=F)
+write.xlsx (annot, "parl_temp_annot.xlsx", row.names=F)
+
 
 
 ## star/featurecounts results
