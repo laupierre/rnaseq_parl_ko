@@ -55,6 +55,17 @@ subread <- merge (counts, annot, by.x="row.names", by.y="gene_id")
 write.table (subread, "parl_star_raw_data_annot_v3.txt", sep="\t", quote=F, row.names=F)
 
 
-# brain tissue
+
+
+###### Differential expression
+
+counts <- read.delim ("parl_star_raw_data_annot_v3.txt", row.names=1)
+
+annot <- counts[ ,grep ("Parl", colnames (counts), invert=TRUE)]
+counts <- counts[ ,grep ("Parl", colnames (counts))]
+
+
+## brain tissue
+
 
 
