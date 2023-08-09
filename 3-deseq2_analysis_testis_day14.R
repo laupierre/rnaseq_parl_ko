@@ -38,8 +38,8 @@ dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = coldata,
                               design = ~ condition)
 
-# keep <- rowSums(counts(dds)) >= 30*(dim(counts)[2]/2)
-keep <- apply (counts (dds), 1, function (x) sum (x >30) > dim(counts)[2]/2 )
+dds <- estimateSizeFactors(dds)
+keep <- apply (counts (dds,norm=TRUE), 1, function (x) sum (x >10) > dim(counts)[2]/2 )
 dds <- dds[keep,]
 dds
 
@@ -58,5 +58,9 @@ res <- res[order (res$padj), ]
 colnames (res)[1] <- "gene_id"
 
 table (res$padj < 0.05)
-
+res[res$external_gene_name == "Chac1", ]
+               
 write.table (res, "parl_star_rnaseq_testis_v3.txt", sep="\t", quote=F, row.names= F)
+
+
+               
