@@ -18,10 +18,28 @@ colnames (muscle)[2:4] <- paste (colnames (muscle)[2:4], "_muscle", sep="")
 co <- merge (testis, brain, by="gene_id", all.x=TRUE, all.y=TRUE)
 co <- merge (co, muscle, by="gene_id", all.x=TRUE, all.y=TRUE)
 
-co <- merge (co, annot, by="gene_id") 
+co <- merge (co, annot, by="gene_id")
+co <- na.omit (co)
 co <- co [order (co$log2FoldChange_testis), ]
 
+
+co$trend <- "no"
+
+for (i in 1:dim (co)[1]) {
+if (
+co$log2FoldChange_testis[i] <0 & co$log2FoldChange_brain[i] < 0 & co$log2FoldChange_muscle[i] < 0)
+{co$trend[i] <- "down"}
+if (
+co$log2FoldChange_testis[i] >0 & co$log2FoldChange_brain[i] > 0 & co$log2FoldChange_muscle[i] > 0)
+{co$trend[i] <- "up"}
+  }
+
+
+
 write.table (co, "parl_comparison_tissues_v3.txt", sep="\t", quote=F, row.names=F)
+
+
+
 
 
 
