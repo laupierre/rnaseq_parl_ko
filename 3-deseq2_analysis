@@ -86,7 +86,8 @@ dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = coldata,
                               design = ~ condition)
 
-keep <- rowSums(counts(dds)) >= 10*(dim(counts)[2]/2)
+# keep <- rowSums(counts(dds)) >= 30*(dim(counts)[2]/2)
+keep <- apply (counts (dds), 1, function (x) sum (x >30) > dim(counts)[2]/2 )
 dds <- dds[keep,]
 dds
 
@@ -164,7 +165,10 @@ dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = coldata,
                               design = ~ condition)
 
-keep <- rowSums(counts(dds)) >= 30
+#keep <- rowSums(counts(dds)) >= 30
+# keep <- rowSums(counts(dds)) >= 30*(dim(counts)[2]/2)
+keep <- apply (counts (dds), 1, function (x) sum (x >30) > dim(counts)[2]/2 )
+
 dds <- dds[keep,]
 dds
 
