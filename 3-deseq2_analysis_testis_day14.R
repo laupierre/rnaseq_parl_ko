@@ -15,6 +15,8 @@ annot <- annot[ ,grep ("transcript_id", colnames (annot), invert=TRUE)]
 annot <- annot[!duplicated (annot), ]
 
 
+## testis day 14
+
 counts <- read.delim ("parl_testis_subread.counts.txt")
 # annot <- counts[ ,c("Geneid", "gene_name", "gene_type")]
 # remove ribosomal RNAs and miRNAs
