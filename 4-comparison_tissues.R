@@ -1,3 +1,7 @@
+annot <- read.delim ("gencode.vM32.annotation.txt")
+annot <- annot[ ,grep ("transcript_id", colnames (annot), invert=TRUE)]
+annot <- unique (annot)
+
 testis <- read.delim ("parl_star_rnaseq_testis_v3.txt")
 testis <- testis [ ,c("gene_id", "baseMean", "log2FoldChange", "padj")]
 colnames (testis)[2:4] <- paste (colnames (testis)[2:4], "_testis", sep="")
@@ -13,5 +17,13 @@ colnames (muscle)[2:4] <- paste (colnames (muscle)[2:4], "_muscle", sep="")
 
 co <- merge (testis, brain, by="gene_id", all.x=TRUE, all.y=TRUE)
 co <- merge (co, muscle, by="gene_id", all.x=TRUE, all.y=TRUE)
+
+co <- merge (co, annot, by="gene_id") 
 co <- co [order (co$log2FoldChange_testis), ]
-head (co)
+
+write.table (co, "comparison_tissues_v3.txt", sep="\t", quote=F, row.names=F)
+
+
+
+
+
