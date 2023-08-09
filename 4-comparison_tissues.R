@@ -21,7 +21,7 @@ co <- merge (co, muscle, by="gene_id", all.x=TRUE, all.y=TRUE)
 co <- merge (co, annot, by="gene_id") 
 co <- co [order (co$log2FoldChange_testis), ]
 
-write.table (co, "comparison_tissues_v3.txt", sep="\t", quote=F, row.names=F)
+write.table (co, "parl_comparison_tissues_v3.txt", sep="\t", quote=F, row.names=F)
 
 
 
