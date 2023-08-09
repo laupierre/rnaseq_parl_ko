@@ -80,6 +80,7 @@ coldata$sample <- gsub ("Parl_", "", coldata$sample)
 coldata$condition <- factor (gsub ("_.*", "", coldata$sample))
 coldata
 
+stopifnot (colnames (counts) == row.names (coldata))
 
 dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = coldata,
