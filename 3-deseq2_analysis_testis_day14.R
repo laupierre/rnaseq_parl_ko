@@ -64,3 +64,27 @@ write.table (res, "parl_star_rnaseq_testis_v3.txt", sep="\t", quote=F, row.names
 
 
                
+## PCA plot
+
+data.frame (sum= apply (counts (dds), 2, sum))
+
+vsd <- vst(dds, blind=FALSE)
+# vsd <- vst (round (counts (dds, norm=TRUE)), blind=FALSE)
+
+# plotPCA(vsd, intgroup=c("condition"))
+
+pcaData <- plotPCA(vsd, intgroup=c("condition"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+ggplot(pcaData, aes(PC1, PC2, color=condition, label=name)) +
+  geom_point(size=3) + geom_text_repel () +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+ggsave ("PCA plot of testis samples v3.pdf")
+
+
+
+
+
+               
