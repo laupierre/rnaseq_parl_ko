@@ -1,3 +1,5 @@
+# /Volumes/texas/spinazzi_bgi/parl_bgi
+
 ## summarize length (min and max lengths) of transcripts by Gene
 
 gtf <- rtracklayer::import("gencode.vM32.primary_assembly.annotation.gtf")
