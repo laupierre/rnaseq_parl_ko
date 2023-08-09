@@ -4,10 +4,19 @@ library (ggplot2)
 library (ggrepel)
 library (DESeq2)
 
+## Gene annotation
+# See https://github.com/laupierre/RNA-Seq_mouse_pipeline/blob/main/gene_annotation.R
+
+annot <- read.delim ("gencode.vM32.annotation.txt")
+length (unique (annot$gene_id))
+# 56953
+
+annot <- annot[ ,grep ("transcript_id", colnames (annot), invert=TRUE)]
+annot <- annot[!duplicated (annot), ]
+
+
 counts <- read.delim ("parl_testis_subread.counts.txt")
-
-annot <- counts[ ,c("Geneid", "gene_name", "gene_type")]
-
+# annot <- counts[ ,c("Geneid", "gene_name", "gene_type")]
 # remove ribosomal RNAs and miRNAs
 counts <- counts[grep ("miRNA|rRNA", counts$gene_type, invert=TRUE), ]
 counts.s <- counts[ ,grep ("Enrico", colnames (counts))]
@@ -43,7 +52,7 @@ resultsNames(dds)
 res <- results(dds, name= "condition_KO_vs_WT")
 
 res <- merge (data.frame (res), round (counts(dds, norm=TRUE)), by="row.names")
-res <- merge (res, annot, by.x="Row.names", by.y="Geneid") 
+res <- merge (res, annot, by.x="Row.names", by.y="gene_id") 
 
 res <- res[order (res$padj), ]
 colnames (res)[1] <- "gene_id"
