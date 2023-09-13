@@ -54,6 +54,8 @@ dim (counts)
 # 57010
 
 subread <- merge (counts, annot, by.x="row.names", by.y="gene_id")
+dim (subread)
+# 56953
 write.table (subread, "parl_star_raw_data_annot_v3.txt", sep="\t", quote=F, row.names=F)
 
 
