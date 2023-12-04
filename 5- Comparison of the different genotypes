@@ -10,6 +10,7 @@ annot <- counts[ ,grep ("Parl", colnames (counts), invert=TRUE)]
 counts <- counts[ ,grep ("Parl", colnames (counts))]
 
 
+
 ## brain tissue
 counts <- counts[ ,grep ("_C", colnames (counts))]
 
@@ -51,8 +52,52 @@ stopifnot (colnames (counts) == row.names (coldata))
 
 coldata <- rbind (coldata1, coldata)
 
-coldata$batch <- c(rep (1, 12), rep (2,12))
+coldata$batch <- factor (c(rep (1, 12), rep (2,12)))
+
+levels (coldata$condition) <- c(levels (coldata$condition), "Parl_KO", "Ndufs4_KO")
+
+coldata$condition [grep ("Parl.*KO", row.names (coldata))] <- "Parl_KO"
+coldata$condition [grep ("NDU.*KO", row.names (coldata))] <- "Ndufs4_KO"
 coldata
+
+counts <- cbind (counts1, counts)
+
+stopifnot (colnames (counts) == row.names (coldata))
+
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = coldata,
+                              design = ~ batch + condition)
+
+# keep <- rowSums(counts(dds)) >= 30*(dim(counts)[2]/2)
+keep <- apply (counts (dds), 1, function (x) sum (x >30) > dim(counts)[2]/2 )
+dds <- dds[keep,]
+dds
+
+dds$condition <- relevel(dds$condition, ref = "WT")
+
+dds <- DESeq(dds)
+resultsNames(dds)
+
+res1 <- data.frame (results(dds, name= "condition_Parl_KO_vs_WT"))
+res2 <- data.frame (results(dds, name= "condition_Ndufs4_KO_vs_WT"))
+
+res <- merge (res1, res2,by= "row.names")
+colnames (res) <- gsub ("\\.x", ".Parl", colnames (res))
+colnames (res) <- gsub ("\\.y", ".Ndufs4", colnames (res))
+head (res)
+
+res <- merge (res, annot, by.x="Row.names", by.y="row.names")
+colnames (res)[1] <- "Ensembl_ID"
+head (res)
+
+write.table (res, "brain_deg_of_the_two_genotypes_for_heatmap.txt", sep="\t", quote=F, row.names=F)
+
+
+
+
+
+
 
 
 
