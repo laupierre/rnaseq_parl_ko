@@ -1,0 +1,62 @@
+library (ggplot2)
+library (ggrepel)
+library (DESeq2)
+
+counts <- read.delim ("parl_star_raw_data_annot_v3.txt", row.names=1)
+# remove ribosomal RNAs and miRNAs
+counts <- counts[grep ("miRNA|rRNA", counts$gene_type, invert=TRUE), ]
+
+annot <- counts[ ,grep ("Parl", colnames (counts), invert=TRUE)]
+counts <- counts[ ,grep ("Parl", colnames (counts))]
+
+
+## brain tissue
+counts <- counts[ ,grep ("_C", colnames (counts))]
+
+coldata <- data.frame (matrix (nrow=dim (counts)[2], ncol=0))
+coldata$sample <- row.names (coldata) <- colnames (counts)
+coldata$sample <- gsub ("Parl_", "", coldata$sample)
+coldata$condition <- factor (gsub ("_.*", "", coldata$sample))
+coldata
+
+stopifnot (colnames (counts) == row.names (coldata))
+
+counts1 <- counts
+coldata1 <- coldata
+
+rm (counts)
+rm (coldata)
+
+
+
+counts <- read.delim ("ndufs4_star_raw_data_annot_v3.txt", row.names=1)
+# remove ribosomal RNAs and miRNAs
+counts <- counts[grep ("miRNA|rRNA", counts$gene_type, invert=TRUE), ]
+
+annot <- counts[ ,grep ("NDU", colnames (counts), invert=TRUE)]
+counts <- counts[ ,grep ("NDU", colnames (counts))]
+
+
+## brain tissue
+counts <- counts[ ,grep ("\\.C", colnames (counts))]
+
+coldata <- data.frame (matrix (nrow=dim (counts)[2], ncol=0))
+coldata$sample <- row.names (coldata) <- colnames (counts)
+coldata$sample <- gsub ("NDU.*_", "", coldata$sample)
+coldata$condition <- factor (gsub ("\\..*", "", coldata$sample))
+coldata
+
+stopifnot (colnames (counts) == row.names (coldata))
+
+
+coldata <- rbind (coldata1, coldata)
+
+coldata$batch <- c(rep (1, 12), rep (2,12))
+coldata
+
+
+
+
+
+
+
