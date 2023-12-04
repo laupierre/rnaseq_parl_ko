@@ -168,7 +168,7 @@ ggplot(pcaData, aes(PC1, PC2, color=condition, label=name)) +
   xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
   coord_fixed()
-ggsave ("PCA plot of brain samples v3.pdf")
+ggsave ("PCA plot of muscle samples v3.pdf")
 
 
 
