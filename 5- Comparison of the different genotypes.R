@@ -248,7 +248,6 @@ library (pheatmap)
 
 a <- read.delim ("muscle_deg_of_the_two_genotypes_for_heatmap.txt")
 head (a)
-               
 
 
 
