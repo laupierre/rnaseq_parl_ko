@@ -137,8 +137,21 @@ a <- unique (a[ ,grep ("log2", colnames (a))])
 colnames (a) <- gsub ("log2FoldChange.", "", colnames (a))
 head (a)
 
+test <- a
+paletteLength <- 100
+#myColor <- colorRampPalette(c("navy", "white", "red"))(paletteLength)
+
+library (RColorBrewer)
+               
+myColor <- colorRampPalette(rev(brewer.pal(n = 3, name = "RdYlBu"))) (paletteLength)
+# length(breaks) == length(paletteLength) + 1
+# use floor and ceiling to deal with even/odd length palette lengths
+myBreaks <- c(seq(min(test), 0, length.out=ceiling(paletteLength/2) + 1), 
+              seq(max(test)/paletteLength, max(test), length.out=floor(paletteLength/2)))
+
+               
 pdf ("heatmap brain.pdf")
-pheatmap(a, angle_col = 0, fontsize_row=7)
+pheatmap(a, angle_col = 0, fontsize_row=7, color=myColor, breaks=myBreaks)
 dev.off ()
 
 
@@ -285,15 +298,19 @@ colnames (a) <- gsub ("log2FoldChange.", "", colnames (a))
 head (a)
 
 test <- a
-paletteLength <- 50
-myColor <- colorRampPalette(c("navy", "white", "red"))(paletteLength)
+paletteLength <- 100
+#myColor <- colorRampPalette(c("navy", "white", "red"))(paletteLength)
+
+library (RColorBrewer)
+               
+myColor <- colorRampPalette(rev(brewer.pal(n = 3, name = "RdYlBu"))) (paletteLength)
 # length(breaks) == length(paletteLength) + 1
-# use floor and ceiling to deal with even/odd length pallettelengths
+# use floor and ceiling to deal with even/odd length palette lengths
 myBreaks <- c(seq(min(test), 0, length.out=ceiling(paletteLength/2) + 1), 
               seq(max(test)/paletteLength, max(test), length.out=floor(paletteLength/2)))
 
                
-pdf ("heatmap brain.pdf")
+pdf ("heatmap muscle.pdf")
 pheatmap(a, angle_col = 0, fontsize_row=7, color=myColor, breaks=myBreaks)
 dev.off ()
 
