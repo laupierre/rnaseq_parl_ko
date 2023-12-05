@@ -137,8 +137,8 @@ a <- unique (a[ ,grep ("log2", colnames (a))])
 colnames (a) <- gsub ("log2FoldChange.", "", colnames (a))
 head (a)
 
-pdf (heatmap.pdf")
-pheatmap(a, angle_col = 0, fontsize_row=8)
+pdf ("heatmap brain.pdf")
+pheatmap(a, angle_col = 0, fontsize_row=7)
 dev.off ()
 
 
@@ -273,16 +273,29 @@ library (pheatmap)
 
 a <- read.delim ("muscle_deg_of_the_two_genotypes_for_heatmap.txt", row.names=1)
 
-a1 <- na.omit (a[a$padj.Parl < 0.05, ])
-a2 <- na.omit (a[a$padj.Ndufs4 < 0.05, ])
-a <- rbind (a1,a2)
+#a1 <- na.omit (a[a$padj.Parl < 0.05, ])
+#a2 <- na.omit (a[a$padj.Ndufs4 < 0.05, ])
+#a <- rbind (a1,a2)
+
+a <- a[a$padj.Parl < 0.05 | a$padj.Ndufs4 < 0.05, ] 
+a <- a[grep ("ENS", row.names (a)), ]
 row.names (a) <- a$external_gene_name
 a <- unique (a[ ,grep ("log2", colnames (a))])
 colnames (a) <- gsub ("log2FoldChange.", "", colnames (a))
 head (a)
 
-pheatmap(a, angle_col = 0)
+test <- a
+paletteLength <- 50
+myColor <- colorRampPalette(c("navy", "white", "red"))(paletteLength)
+# length(breaks) == length(paletteLength) + 1
+# use floor and ceiling to deal with even/odd length pallettelengths
+myBreaks <- c(seq(min(test), 0, length.out=ceiling(paletteLength/2) + 1), 
+              seq(max(test)/paletteLength, max(test), length.out=floor(paletteLength/2)))
 
+               
+pdf ("heatmap brain.pdf")
+pheatmap(a, angle_col = 0, fontsize_row=7, color=myColor, breaks=myBreaks)
+dev.off ()
 
 
 
