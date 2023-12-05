@@ -243,11 +243,22 @@ write.table (res, "muscle_deg_of_the_two_genotypes_for_heatmap.txt", sep="\t", q
 
 
 #### heatmap
+# see: https://www.reneshbedre.com/blog/heatmap-with-pheatmap-package-r.html?utm_content=cmp-true
 
 library (pheatmap)
 
-a <- read.delim ("muscle_deg_of_the_two_genotypes_for_heatmap.txt")
+a <- read.delim ("muscle_deg_of_the_two_genotypes_for_heatmap.txt", row.names=1)
+
+a1 <- na.omit (a[a$padj.Parl < 0.05, ])
+a2 <- na.omit (a[a$padj.Ndufs4 < 0.05, ])
+a <- rbind (a1,a2)
+row.names (a) <- a$external_gene_name
+a <- unique (a[ ,grep ("log2", colnames (a))])
+colnames (a) <- gsub ("log2FoldChange.", "", colnames (a))
 head (a)
+
+pheatmap(a, angle_col = 0)
+
 
 
 
