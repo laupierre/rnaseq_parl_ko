@@ -1,0 +1,171 @@
+counts <- read.delim ("ttc19_subread.counts.txt", row.names=1, skip=1)
+
+counts <- counts[ ,grep ("bam", colnames (counts))]
+colnames (counts) <- gsub ("Aligned.out.bam", "", colnames (counts))
+colnames (counts) <- gsub ("star.", "", colnames (counts))
+dim (counts)
+# 57010
+
+subread <- merge (counts, annot, by.x="row.names", by.y="gene_id")
+dim (subread)
+# 56953
+#write.table (subread, "ttc19_star_raw_data_annot_v3.txt", sep="\t", quote=F, row.names=F)
+
+
+
+
+
+## brain
+
+library (ggplot2)
+library (ggrepel)
+library (DESeq2)
+
+
+counts <- read.delim ("ttc19_star_raw_data_annot_v3.txt", row.names=1)
+# remove ribosomal RNAs and miRNAs
+counts <- counts[grep ("miRNA|rRNA", counts$gene_type, invert=TRUE), ]
+
+annot <- counts[ ,grep ("TTC", colnames (counts), invert=TRUE)]
+counts <- counts[ ,grep ("TTC", colnames (counts))]
+
+
+## brain tissue
+counts <- counts[ ,grep ("_C", colnames (counts))]
+
+coldata <- data.frame (matrix (nrow=dim (counts)[2], ncol=0))
+coldata$sample <- row.names (coldata) <- colnames (counts)
+coldata$sample <- gsub ("_[0-9].*", "", coldata$sample)
+coldata$condition <- factor (gsub (".*_", "", coldata$sample))
+coldata
+
+
+stopifnot (colnames (counts) == row.names (coldata))
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = coldata,
+                              design = ~ condition)
+
+# keep <- rowSums(counts(dds)) >= 30*(dim(counts)[2]/2)
+keep <- apply (counts (dds), 1, function (x) sum (x >30) > dim(counts)[2]/2 )
+dds <- dds[keep,]
+dds
+
+dds$condition <- relevel(dds$condition, ref = "WT")
+
+dds <- DESeq(dds)
+resultsNames(dds)
+
+res <- results(dds, name= "condition_KO_vs_WT")
+
+res <- merge (data.frame (res), round (counts(dds, norm=TRUE)), by="row.names")
+res <- merge (res, annot, by.x="Row.names", by.y="row.names") 
+
+res <- res[order (res$padj), ]
+colnames (res)[1] <- "gene_id"
+
+table (res$padj < 0.05)
+
+write.table (res, "ttc_star_rnaseq_brain_v3.txt", sep="\t", quote=F, row.names= F)
+
+
+
+## PCA plot
+
+data.frame (sum= apply (counts (dds), 2, sum))
+
+vsd <- vst(dds, blind=FALSE)
+# vsd <- vst (round (counts (dds, norm=TRUE)), blind=FALSE)
+
+# plotPCA(vsd, intgroup=c("condition"))
+
+pcaData <- plotPCA(vsd, intgroup=c("condition"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+ggplot(pcaData, aes(PC1, PC2, color=condition, label=name)) +
+  geom_point(size=3) + geom_text_repel () +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+ggsave ("PCA plot of brain samples v3.pdf")
+
+
+
+
+#########
+## muscle
+
+library (ggplot2)
+library (ggrepel)
+library (DESeq2)
+
+
+counts <- read.delim ("ttc19_star_raw_data_annot_v3.txt", row.names=1)
+# remove ribosomal RNAs and miRNAs
+counts <- counts[grep ("miRNA|rRNA", counts$gene_type, invert=TRUE), ]
+
+annot <- counts[ ,grep ("TTC", colnames (counts), invert=TRUE)]
+counts <- counts[ ,grep ("TTC", colnames (counts))]
+
+
+## muscle tissue
+counts <- counts[ ,grep ("_M", colnames (counts))]
+
+coldata <- data.frame (matrix (nrow=dim (counts)[2], ncol=0))
+coldata$sample <- row.names (coldata) <- colnames (counts)
+coldata$sample <- gsub ("_[0-9].*", "", coldata$sample)
+coldata$condition <- factor (gsub (".*_", "", coldata$sample))
+coldata
+
+
+stopifnot (colnames (counts) == row.names (coldata))
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = coldata,
+                              design = ~ condition)
+
+# keep <- rowSums(counts(dds)) >= 30*(dim(counts)[2]/2)
+keep <- apply (counts (dds), 1, function (x) sum (x >30) > dim(counts)[2]/2 )
+dds <- dds[keep,]
+dds
+
+dds$condition <- relevel(dds$condition, ref = "WT")
+
+dds <- DESeq(dds)
+resultsNames(dds)
+
+res <- results(dds, name= "condition_KO_vs_WT")
+
+res <- merge (data.frame (res), round (counts(dds, norm=TRUE)), by="row.names")
+res <- merge (res, annot, by.x="Row.names", by.y="row.names") 
+
+res <- res[order (res$padj), ]
+colnames (res)[1] <- "gene_id"
+
+table (res$padj < 0.05)
+
+write.table (res, "ttc_star_rnaseq_muscle_v3.txt", sep="\t", quote=F, row.names= F)
+
+
+
+## PCA plot
+
+data.frame (sum= apply (counts (dds), 2, sum))
+
+vsd <- vst(dds, blind=FALSE)
+# vsd <- vst (round (counts (dds, norm=TRUE)), blind=FALSE)
+
+# plotPCA(vsd, intgroup=c("condition"))
+
+pcaData <- plotPCA(vsd, intgroup=c("condition"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+ggplot(pcaData, aes(PC1, PC2, color=condition, label=name)) +
+  geom_point(size=3) + geom_text_repel () +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+ggsave ("PCA plot of muscle samples v3.pdf")
+
+
+
